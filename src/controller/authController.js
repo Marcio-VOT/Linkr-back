@@ -1,6 +1,10 @@
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import dotenv from "dotenv"
 import { authRepository } from "../repositories/auth.repository.js"
 import { userRepository } from "../repositories/user.repository.js"
-import bcrypt from "bcrypt"
+
+dotenv.config()
 
 export const authController = {
     async signup(req, res) {
@@ -21,5 +25,22 @@ export const authController = {
             console.log(error)
             return res.sendStatus(500)
         }
+    },
+    async signin(req, res){
+        const {email, password} = req.body
+
+        const user = await userRepository.getUserByEmail(email)
+
+        if(!user){
+            return res.sendStatus(404)
+        }
+
+        const confirmPassword = bcrypt.compareSync(password, user.password)
+        if(!confirmPassword){
+            return res.sendStatus(401)
+        }
+
+        const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: "3h" })
+        return res.send({token, avatar: user.profile_picture})
     }
 }
