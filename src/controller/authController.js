@@ -7,7 +7,8 @@ export const authController = {
         const { name, email, password, profileUrl} = req.body
         try {
 
-            const emailAlreadyExists = await userRepository.getUserByEmail()
+            const emailAlreadyExists = await userRepository.getUserByEmail(email)
+            console.log(emailAlreadyExists)
             if (emailAlreadyExists) {
                 return res.sendStatus(409);
             }
