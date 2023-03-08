@@ -6,3 +6,7 @@ export const selectUser = async (user) => {
     [`${user}%`]
   );
 };
+
+export const selectUserPosts = async (id) => {
+  return await db.query(`SELECT * FROM posts WHERE user_id = $1;`, [id]);
+};
