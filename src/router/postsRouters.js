@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { alterPost, deletePost, getPosts, registerPost } from '../controller/postControllers.js';
 import validatePost from '../middlewares/validatePost.js';
+import validateToken from '../middlewares/validateToken.js'
 
 const router = Router();
 
 router.get("/posts", getPosts);
-router.post("/posts", validatePost, registerPost);
-router.put("/posts/:id", alterPost);
-router.delete("/posts/:id", deletePost);
+router.post("/posts",validatePost, validateToken, registerPost);
+router.put("/posts/:id",validateToken, alterPost);
+router.delete("/posts/:id",validateToken, deletePost);
 
 export default router;
