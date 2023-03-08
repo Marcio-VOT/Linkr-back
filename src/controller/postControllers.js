@@ -1,10 +1,11 @@
-import { getPostsRepository } from "../repositories/postRepository.js";
+import { getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
 
 export async function registerPost(req, res){
+    const {description, external_link} = req.body;
     try {
-        
+        await registerPostRepository(description, external_link);
     } catch (error) {
-        
+        res.send(error.message);
     }
 }
 
