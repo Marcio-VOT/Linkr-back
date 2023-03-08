@@ -1,4 +1,4 @@
-import { deletePostRepository, getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
+import { alterPostRepository, deletePostRepository, getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
 
 export async function registerPost(req, res){
     const {description, externalLink} = req.body;
@@ -33,9 +33,13 @@ export async function deletePost(req, res){
 }
 
 export async function alterPost(req, res){
+    const userId = req.params.id;
+    const {description} = req.body;
+
     try {
-        
+        await alterPostRepository(userId, description);
+        res.send("Post alterado com sucesso").status(200);        
     } catch (error) {
-        
+        res.send(error.message);
     }
 }

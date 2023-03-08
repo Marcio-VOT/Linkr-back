@@ -9,8 +9,8 @@ export async function registerPostRepository(description, externalLink){
     await db.query(`INSERT INTO posts (user_id, description, external_link) VALUES ($1, $2, $3)`, [userId, description, externalLink]);
 }
 
-export async function alterPostRepossitory(postId){
-    await db.query();
+export async function alterPostRepository(postId, description){
+    await db.query(`UPDATE posts SET description = $1 WHERE id = $2`, [description, postId]);
 }
 
 export async function deletePostRepository(postId){
