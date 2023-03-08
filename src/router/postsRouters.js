@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { alterPost, deletePost, getPosts, registerPost } from '../controller/postControllers.js';
-import { postSchema } from '../schemas/postSchema.js';
+import validatePost from '../middlewares/validatePost.js';
 
 const router = Router();
 
 router.get("/posts", getPosts);
-router.post("/posts"), postSchema ,registerPost;
-router.put("/posts", alterPost);
-router.delete("/posts", deletePost);
+router.post("/posts", validatePost, registerPost);
+router.put("/posts/:id", alterPost);
+router.delete("/posts/:id", deletePost);
 
 export default router;
