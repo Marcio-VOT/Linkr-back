@@ -10,9 +10,10 @@ export async function registerPost(req, res){
 
 export async function getPosts(req, res){
     try {
-        res.send(getPostsRepository.rows);
+        const result = await getPostsRepository();
+        res.send(result.rows);
     } catch (error) {
-        res.send(error.message)
+        res.send(error.message);
     }
 }
 
