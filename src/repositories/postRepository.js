@@ -4,8 +4,7 @@ export async function getPostsRepository(){
     return await db.query("SELECT * FROM posts");
 }
 
-export async function registerPostRepository(description, externalLink){
-    const userId = 1;
+export async function registerPostRepository(userId, description, externalLink){
     await db.query(`INSERT INTO posts (user_id, description, external_link) VALUES ($1, $2, $3)`, [userId, description, externalLink]);
 }
 

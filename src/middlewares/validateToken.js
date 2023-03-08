@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export function validateToken(req, res, next) {
+export default function validateToken(req, res, next) {
     let { authorization: token } = req.headers;
 
     if (!token) {
@@ -15,7 +15,7 @@ export function validateToken(req, res, next) {
         if (err) {
             return res.status(401).send({ message: "Invalid token" });
         }
-        res.locals.userId = decoded.id;
+        res.locals.userId = decoded.userId;
     });
     next();
 }
