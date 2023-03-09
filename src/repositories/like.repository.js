@@ -28,3 +28,12 @@ export async function unlike(idUser,idPost){
         
     }
 }
+export async function twoUsers(idUser){
+    try {
+        const result = await db.query(`SELECT name FROM users JOIN likes ON users.id = likes.user_id LIMIT 2`)
+        console.log(result.rows)
+    } catch (error) {
+        console.log(error) 
+    }
+
+}
