@@ -8,10 +8,20 @@ export async function registerPostRepository(userId, description, externalLink){
     await db.query(`INSERT INTO posts (user_id, description, external_link) VALUES ($1, $2, $3)`, [userId, description, externalLink]);
 }
 
-export async function alterPostRepository(postId, description){
-    await db.query(`UPDATE posts SET description = $1 WHERE id = $2`, [description, postId]);
+export async function alterPostRepository(postId, userId, description){
+    const postUserId = await db.query(`SELECT user_id FROM posts WHERE id = $1`, [postId]);
+    const validUser = postUserId.rows[0].user_id === userId;
+    
+    if(validUser){
+        await db.query(`UPDATE posts SET description = $1 WHERE id = $2`, [description, postId]);
+    }
 }
 
-export async function deletePostRepository(postId){
-    await db.query(`DELETE FROM posts WHERE id = $1`, [postId])
+export async function deletePostRepository(postId, userId){
+    const postUserId = await db.query(`SELECT user_id FROM posts WHERE id = $1`, [postId]);
+    const validUser = postUserId.rows[0].user_id === userId;
+
+    if(validUser){
+        await db.query(`DELETE FROM posts WHERE id = $1`, [postId]);
+    }
 }
