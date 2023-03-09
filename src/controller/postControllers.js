@@ -15,7 +15,6 @@ export async function registerPost(req, res){
 export async function getPosts(req, res){
     try {
         const result = await getPostsRepository();
-        console.log(result);
         res.send(result.rows);
     } catch (error) {
         res.send(error.message);
