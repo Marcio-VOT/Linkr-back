@@ -7,15 +7,14 @@ export async function getPostsRepository(){
         FROM posts p 
         JOIN users u 
         ON p.user_id = u.id
-        ORDER BY p.publish_date DESC
-        LIMIT 20`);
+        `);
 }
 
 export async function registerPostRepository(userId, description, externalLink){
     const date = dayjs();
     await db.query(`
     INSERT INTO posts (user_id, description, external_link, publish_date) 
-    VALUES ($1, $2, $3, $4)`, [userId, description, externalLink, date]);
+    VALUES ($1, $2, $3, $4) RETURN id`, [userId, description, externalLink, date]);
 }
 
 export async function alterPostRepository(postId, userId, description){
