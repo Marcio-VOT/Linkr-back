@@ -4,7 +4,6 @@ export async function registerPost(req, res){
     const {description, externalLink} = req.body;
     const userId = res.locals.userId;
 
-    console.log(res.locals.userId);
     try {
         await registerPostRepository(userId, description, externalLink);
         res.send("Post criado").status(201);
