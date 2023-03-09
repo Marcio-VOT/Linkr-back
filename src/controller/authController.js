@@ -42,5 +42,19 @@ export const authController = {
 
         const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: "3h" })
         return res.send({token, avatar: user.profile_picture})
+    },
+    validToken(req, res){
+        const { token } = req.params
+
+        if (!token) {
+            res.status(401).send({ message: "invalid token" });
+        }
+
+        jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+            if (err) {
+                return res.status(401).send({ message: "Invalid token" });
+            }
+            return res.sendStatus(200)
+        })
     }
 }

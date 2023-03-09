@@ -8,5 +8,6 @@ const authRouter = Router()
 
 authRouter.post("/signup", validateSchema(createUserSchema), authController.signup)
 authRouter.post("/signin", validateSchema(loginSchema), authController.signin)
+authRouter.get("/validtoken/:token", authController.validToken)
 
 export {authRouter}
