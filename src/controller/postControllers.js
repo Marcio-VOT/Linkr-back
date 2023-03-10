@@ -1,26 +1,35 @@
-import { getHashTags, insertHashtagOnDb, insertPostHashtag, getPostHashTags, getTagByName } from "../repositories/hashtagRepository.js";
+import { getHashTags, insertHashtagOnDb, insertPostHashtag, getTagByPostId, getTagByName } from "../repositories/hashtagRepository.js";
 import { alterPostRepository, deletePostRepository, getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
 
 export async function registerPost(req, res) {
   let { description, externalLink, hashtags } = req.body;
   const userId = res.locals.userId;
+  const tagRows = [];
  
   try {
     const postId = await registerPostRepository(userId, description, externalLink);
-    console.log(hashtags)
     if (!hashtags) {
       return res.status(201).send("Post criado");
     }
+    
     hashtags.forEach(async (e) => {
       const resultHashtag = await getTagByName(e)
       if (resultHashtag[0]) {
+      if(tagRows[0]){
+        console.log(tagRows.includes(e))
+        if(tagRows.includes(e)){
+          return;
+        } 
+      }
         await insertPostHashtag(resultHashtag[0].id, postId)
+        tagRows.push(e)
         return
       }
       const resultInsertHashtag = await insertHashtagOnDb(e)
       await insertPostHashtag(resultInsertHashtag.rows[0].id, postId)
+      tagRows.push(e)
       res.status(201).send("Post criado")
-    });
+    })
   } catch (error) {
     console.log(error)
     res.status(500).send(error.message);

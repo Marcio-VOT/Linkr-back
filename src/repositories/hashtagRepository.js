@@ -24,6 +24,18 @@ export const getTagByName = async (name) => {
   return result.rows
 }
 
+export const getTagByPostId = async (postId) => {
+  const query = `
+  SELECT hashtags.hashtag
+  FROM post_hashtags
+  JOIN hashtags
+  ON hashtags.id = post_hashtags.hashtag_id
+  where post_hashtags.post_id = $1;
+  `
+  const result = await db.query(query, [postId])
+  return result.rows.map(e => e.hashtag) || []
+}
+
 export const getPostHashTags = async (hashtag) => {
   const postHashtagsIds = await db.query(
     `SELECT id from hashtags 
