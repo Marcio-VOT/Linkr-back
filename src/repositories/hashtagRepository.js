@@ -5,7 +5,7 @@ export const insertHashtagOnDb = async(hashtag) => {
     (hashtag) values ($1) RETURNING id`, [hashtag])
 }
 
-export const inserPostHashtag = async (hashtagId, postId) => {
+export const insertPostHashtag = async (hashtagId, postId) => {
   return await db.query(`INSERT INTO post_hashtags 
   (hashtag_id, post_id) values ($1, $2)`, [hashtagId, postId])
 }
@@ -15,9 +15,18 @@ export const getHashTags = async() => {
     return fetchHashtags.rows
 }
 
+export const getTagByName = async (name) => {
+  const result = await db.query(
+    `SELECT id from hashtags 
+    WHERE hashtag = $1`,
+    [name]
+  );
+  return result.rows
+}
+
 export const getPostHashTags = async (hashtag) => {
   const postHashtagsIds = await db.query(
-    `SELECT post_id from hashtags 
+    `SELECT id from hashtags 
     WHERE hashtag = $1`,
     [hashtag]
   );

@@ -1,28 +1,32 @@
-import { getHashTags, insertHashtagOnDb, inserPostHashtag } from "../repositories/hashtagRepository.js";
+import { getHashTags, insertHashtagOnDb, insertPostHashtag, getPostHashTags, getTagByName } from "../repositories/hashtagRepository.js";
 import { alterPostRepository, deletePostRepository, getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
 
 export async function registerPost(req, res) {
-  const { description, externalLink, hashtag } = req.body;
+  let { description, externalLink, hashtags } = req.body;
   const userId = res.locals.userId;
-
+ 
   try {
-    const resultPost = await registerPostRepository(userId, description, externalLink);
-    console.log(hashtag)
-    if (!hashtag) {
+    const postId = await registerPostRepository(userId, description, externalLink);
+    console.log(hashtags)
+    if (!hashtags) {
       return res.status(201).send("Post criado");
     }
-    const resultHashtag = await getHashTags(hashtag)
-    if (resultHashtag[0]) {
-      await inserPostHashtag(resultHashtag[0].id, resultPost[0].id)
-    }
-    const resultInserHashtag = await insertHashtagOnDb(hashtag)
-    await inserPostHashtag(resultInserHashtag.rows[0].id, resultPost[0].id)
-    return res.status(201).send("Post criado")
-
+    hashtags.forEach(async (e) => {
+      const resultHashtag = await getTagByName(e)
+      if (resultHashtag[0]) {
+        await insertPostHashtag(resultHashtag[0].id, postId)
+        return
+      }
+      const resultInsertHashtag = await insertHashtagOnDb(e)
+      await insertPostHashtag(resultInsertHashtag.rows[0].id, postId)
+      res.status(201).send("Post criado")
+    });
   } catch (error) {
+    console.log(error)
     res.status(500).send(error.message);
   }
 }
+
 export async function getPosts(req, res) {
   try {
     const resultPost = await getPostsRepository();
