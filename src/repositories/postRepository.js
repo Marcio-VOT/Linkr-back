@@ -2,19 +2,20 @@ import db from "../config/db.js"
 import dayjs from "dayjs";
 
 export async function getPostsRepository(){
-    return await db.query(`
+    resultPost = await db.query(`
         SELECT p.description, p.external_link, p.publish_date, u.name, u.profile_picture 
         FROM posts p 
         JOIN users u 
         ON p.user_id = u.id
         `);
+        return resultPost.rows
 }
 
 export async function registerPostRepository(userId, description, externalLink){
     const date = dayjs();
-    await db.query(`
+    return await db.query(`
     INSERT INTO posts (user_id, description, external_link, publish_date) 
-    VALUES ($1, $2, $3, $4) RETURN id`, [userId, description, externalLink, date]);
+    VALUES ($1, $2, $3, $4) RETURNING id`, [userId, description, externalLink, date]);
 }
 
 export async function alterPostRepository(postId, userId, description){

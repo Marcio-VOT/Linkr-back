@@ -1,36 +1,44 @@
-import { getHashTags, insertHashtagOnDb } from "../repositories/hashtagRepository.js";
+import { getHashTags, insertHashtagOnDb, inserPostHashtag } from "../repositories/hashtagRepository.js";
 import { alterPostRepository, deletePostRepository, getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
 
-export async function registerPost(req, res){
-    const {description, externalLink, hashtag} = req.body;
+export async function registerPost(req, res) {
+    const { description, externalLink, hashtag } = req.body;
     const userId = res.locals.userId;
 
     try {
-        const post_id = await registerPostRepository(userId, description, externalLink);
-        if(!hashtag) res.send("Post criado").status(201);
-        else{
-            insertHashtagOnDb(hashtag, post_id)
-            res.send("Post criado").status(201)
+        const resultPost = await registerPostRepository(userId, description, externalLink);
+        console.log(hashtag)
+        if (!hashtag) {
+            return res.status(201).send("Post criado");
         }
+        const resultHashtag = await getHashTags(hashtag)
+        if (resultHashtag[0]) {
+            await inserPostHashtag(resultHashtag[0].id, resultPost[0].id)
+        }
+        const resultInserHashtag = await insertHashtagOnDb(hashtag)
+        await inserPostHashtag(resultInserHashtag.rows[0].id, resultPost[0].id)
+        return res.status(201).send("Post criado")
+
     } catch (error) {
         res.status(500).send(error.message);
     }
 }
 
-export async function getPosts(req, res){
+export async function getPosts(req, res) {
     try {
         const resultPost = await getPostsRepository();
         const resultHashtags = await getHashTags()
-        res.send({posts: result.rows, hashtags: resultHashtags.rows});
+        res.send({ posts: resultPost.rows, hashtags: resultHashtags.rows });
     } catch (error) {
+        console.log(error)
         res.status(500).send(error.message);
     }
 }
 
-export async function deletePost(req, res){
+export async function deletePost(req, res) {
     const postId = req.params.id;
     const userId = res.locals.userId;
-    
+
     try {
         await deletePostRepository(postId, userId);
         res.send("post deletado com sucesso").status(200);
@@ -39,14 +47,14 @@ export async function deletePost(req, res){
     }
 }
 
-export async function alterPost(req, res){
+export async function alterPost(req, res) {
     const postId = req.params.id;
     const userId = res.locals.userId;
-    const {description} = req.body;
+    const { description } = req.body;
 
     try {
         await alterPostRepository(postId, userId, description);
-        res.send("Post alterado com sucesso").status(200);        
+        res.send("Post alterado com sucesso").status(200);
     } catch (error) {
         res.send(error.message);
     }
