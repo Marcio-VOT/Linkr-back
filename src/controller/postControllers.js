@@ -9,7 +9,7 @@ export async function registerPost(req, res) {
   try {
     const postId = await registerPostRepository(userId, description, externalLink);
     if (!hashtags) {
-      return res.status(201).send("Post criado");
+      return res.sendStatus(201);
     }
     
     hashtags.forEach(async (e) => {
@@ -28,7 +28,7 @@ export async function registerPost(req, res) {
       const resultInsertHashtag = await insertHashtagOnDb(e)
       await insertPostHashtag(resultInsertHashtag.rows[0].id, postId)
       tagRows.push(e)
-      res.status(201).send("Post criado")
+      res.sendStatus(201)
     })
   } catch (error) {
     console.log(error)
@@ -53,7 +53,7 @@ export async function deletePost(req, res) {
 
   try {
     await deletePostRepository(postId, userId);
-    res.send("post deletado com sucesso").status(200);
+    res.send("post deletado com sucesso");
   } catch (error) {
     res.send(error.message);
   }
@@ -67,11 +67,11 @@ export async function alterPost(req, res) {
   try {
     const result = await alterPostRepository(postId, userId, description);
     if (result === true) {
-      res.send("the post description was updated!").status(200);
+      res.send("the post description was updated!");
     } else if (result === false) {
-      res.send("only the creator of the post can update it");
+      res.status(401).send("only the creator of the post can update it");
     }
   } catch (error) {
-    res.send(error.message);
+    res.status(500).send(error.message);
   }
 }
