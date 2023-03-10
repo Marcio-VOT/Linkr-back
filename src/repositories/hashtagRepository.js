@@ -1,19 +1,25 @@
 import db from "../config/db.js";
 
-export const insertHashtagOnDb = async(hashtag) => {
-    return await db.query(`INSERT INTO hashtags 
-    (hashtag) values ($1) RETURNING id`, [hashtag])
-}
+export const insertHashtagOnDb = async (hashtag) => {
+  return await db.query(
+    `INSERT INTO hashtags 
+    (hashtag) values ($1) RETURNING id`,
+    [hashtag]
+  );
+};
 
 export const insertPostHashtag = async (hashtagId, postId) => {
-  return await db.query(`INSERT INTO post_hashtags 
-  (hashtag_id, post_id) values ($1, $2)`, [hashtagId, postId])
-}
+  return await db.query(
+    `INSERT INTO post_hashtags 
+  (hashtag_id, post_id) values ($1, $2)`,
+    [hashtagId, postId]
+  );
+};
 
-export const getHashTags = async() => {
-    const fetchHashtags =  await db.query(`SELECT id, hashtag from hashtags`)
-    return fetchHashtags.rows
-}
+export const getHashTags = async () => {
+  const fetchHashtags = await db.query(`SELECT id, hashtags from hashtags`);
+  return fetchHashtags.rows;
+};
 
 export const getTagByName = async (name) => {
   const result = await db.query(
@@ -21,8 +27,8 @@ export const getTagByName = async (name) => {
     WHERE hashtag = $1`,
     [name]
   );
-  return result.rows
-}
+  return result.rows;
+};
 
 export const getTagByPostId = async (postId) => {
   const query = `
@@ -31,10 +37,10 @@ export const getTagByPostId = async (postId) => {
   JOIN hashtags
   ON hashtags.id = post_hashtags.hashtag_id
   where post_hashtags.post_id = $1;
-  `
-  const result = await db.query(query, [postId])
-  return result.rows.map(e => e.hashtag) || []
-}
+  `;
+  const result = await db.query(query, [postId]);
+  return result.rows.map((e) => e.hashtag) || [];
+};
 
 export const getPostHashTags = async (hashtag) => {
   const postHashtagsIds = await db.query(
@@ -42,7 +48,7 @@ export const getPostHashTags = async (hashtag) => {
     WHERE hashtag = $1`,
     [hashtag]
   );
-  
+
   const posts = postHashtagsIds.rows.map(async (e) => {
     return await db.query(
       `
