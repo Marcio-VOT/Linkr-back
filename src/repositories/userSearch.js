@@ -13,7 +13,7 @@ export const selectUserPosts = async (id) => {
 
 export const selectUserData = async (id) => {
   return await db.query(
-    `SELECT name, profile_picture AS picture	FROM users WHERE id = $1;`,
+    `SELECT id, name, profile_picture AS picture	FROM users WHERE id = $1;`,
     [id]
   );
 };
