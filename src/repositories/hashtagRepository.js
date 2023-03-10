@@ -1,28 +1,48 @@
 import db from "../config/db.js";
 
-export const insertHashtagOnDb = async(hashtag, post_id) => {
-    let result = await db.query(`SELECT * FROM hashtags
-    WHERE hashtag = $1`, [hashtag])
-    if (result.rowCount > 0) return 
-    result = await db.query(`INSERT INTO hashtags
+export const insertHashtagOnDb = async(hashtag) => {
+    return await db.query(`INSERT INTO hashtags 
     (hashtag) values ($1) RETURNING id`, [hashtag])
-    const hashtag_id = result.rows[0].id
-    await db.query(`INSERT INTO post_hashtags 
-    (hashtag_id, post_id) values ($1, $2)`, [hashtag_id, post_id])
 }
 
-export const getHashTags = async () => {
-  const fetchHashtags = await db.query(`SELECT hashtags from hashtags`);
-  console.log(fetchHashtags.rows);
-  return fetchHashtags.rows;
-};
+export const insertPostHashtag = async (hashtagId, postId) => {
+  return await db.query(`INSERT INTO post_hashtags 
+  (hashtag_id, post_id) values ($1, $2)`, [hashtagId, postId])
+}
+
+export const getHashTags = async() => {
+    const fetchHashtags =  await db.query(`SELECT id, hashtag from hashtags`)
+    return fetchHashtags.rows
+}
+
+export const getTagByName = async (name) => {
+  const result = await db.query(
+    `SELECT id from hashtags 
+    WHERE hashtag = $1`,
+    [name]
+  );
+  return result.rows
+}
+
+export const getTagByPostId = async (postId) => {
+  const query = `
+  SELECT hashtags.hashtag
+  FROM post_hashtags
+  JOIN hashtags
+  ON hashtags.id = post_hashtags.hashtag_id
+  where post_hashtags.post_id = $1;
+  `
+  const result = await db.query(query, [postId])
+  return result.rows.map(e => e.hashtag) || []
+}
 
 export const getPostHashTags = async (hashtag) => {
   const postHashtagsIds = await db.query(
-    `SELECT post_id from hashtags 
+    `SELECT id from hashtags 
     WHERE hashtag = $1`,
     [hashtag]
   );
+  
   const posts = postHashtagsIds.rows.map(async (e) => {
     return await db.query(
       `
