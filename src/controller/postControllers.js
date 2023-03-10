@@ -8,16 +8,20 @@ export async function registerPost(req, res) {
  
   try {
     const postId = await registerPostRepository(userId, description, externalLink);
-    if (!hashtags) {
+    console.log(hashtags)
+    if (hashtags.length === 0) {
       return res.sendStatus(201);
     }
     
-    hashtags.forEach(async (e) => {
+    hashtags.forEach(async (e, i) => {
       const resultHashtag = await getTagByName(e)
       if (resultHashtag[0]) {
       if(tagRows[0]){
         console.log(tagRows.includes(e))
         if(tagRows.includes(e)){
+          if(hashtags.length - 1 === i){
+            return res.sendStatus(200)
+          }
           return;
         } 
       }
