@@ -10,7 +10,7 @@ export async function getPostsRepository() {
         ORDER BY p.publish_date DESC
         LIMIT 20
         `);
-    return resultPost.rows
+    return resultPost
 }
 
 export async function registerPostRepository(userId, description, externalLink) {
