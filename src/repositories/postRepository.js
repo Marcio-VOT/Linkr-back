@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 
 export async function getPostsRepository() {
   const resultPost = await db.query(`
-        SELECT p.id, p.description, p.external_link, p.publish_date, u.name, u.profile_picture, u.user_id
+        SELECT p.id, p.description, p.external_link, p.publish_date , p.user_id, u.name, u.profile_picture
         FROM posts p 
         JOIN users u 
         ON p.user_id = u.id
