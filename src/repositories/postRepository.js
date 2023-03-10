@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 
 export async function getPostsRepository(){
     return await db.query(`
-        SELECT p.description, p.external_link, p.publish_date, u.name, u.profile_picture 
+        SELECT p.id, p.description, p.external_link, p.publish_date, u.name, u.profile_picture 
         FROM posts p 
         JOIN users u 
         ON p.user_id = u.id
@@ -23,6 +23,9 @@ export async function alterPostRepository(postId, userId, description){
     
     if(validUser){
         await db.query(`UPDATE posts SET description = $1 WHERE id = $2`, [description, postId]);
+        return validUser;
+    } else {
+        return validUser
     }
 }
 
