@@ -13,9 +13,11 @@ export async function getPostsRepository(){
 }
 
 export async function registerPostRepository(userId, description, externalLink){
-    await db.query(`
+    const date = dayjs();
+    const result = await db.query(`
     INSERT INTO posts (user_id, description, external_link, publish_date) 
-    VALUES ($1, $2, $3, $4)`, [userId, description, externalLink, date]);
+    VALUES ($1, $2, $3, $4) RETURNING id`, [userId, description, externalLink, date]);
+    return result.rows[0].id
 }
 
 export async function alterPostRepository(postId, userId, description){
