@@ -1,5 +1,9 @@
-import { getHashTags, insertHashtagOnDb } from "../repositories/hashtagRepository.js";
-import { alterPostRepository, deletePostRepository, getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
+import {
+  alterPostRepository,
+  deletePostRepository,
+  getPostsRepository,
+  registerPostRepository,
+} from "../repositories/postRepository.js";
 
 export async function registerPost(req, res){
     const {description, externalLink, hashtags} = req.body;
@@ -28,27 +32,31 @@ export async function getPosts(req, res){
     }
 }
 
-export async function deletePost(req, res){
-    const postId = req.params.id;
-    const userId = res.locals.userId;
-    
-    try {
-        await deletePostRepository(postId, userId);
-        res.send("post deletado com sucesso").status(200);
-    } catch (error) {
-        res.send(error.message);
-    }
+export async function deletePost(req, res) {
+  const postId = req.params.id;
+  const userId = res.locals.userId;
+
+  try {
+    await deletePostRepository(postId, userId);
+    res.send("post deletado com sucesso").status(200);
+  } catch (error) {
+    res.send(error.message);
+  }
 }
 
-export async function alterPost(req, res){
-    const postId = req.params.id;
-    const userId = res.locals.userId;
-    const {description} = req.body;
+export async function alterPost(req, res) {
+  const postId = req.params.id;
+  const userId = res.locals.userId;
+  const { description } = req.body;
 
-    try {
-        await alterPostRepository(postId, userId, description);
-        res.send("Post alterado com sucesso").status(200);        
-    } catch (error) {
-        res.send(error.message);
+  try {
+    const result = await alterPostRepository(postId, userId, description);
+    if (result === true) {
+      res.send("the post description was updated!").status(200);
+    } else if (result === false) {
+      res.send("only the creator of the post can update it");
     }
+  } catch (error) {
+    res.send(error.message);
+  }
 }
