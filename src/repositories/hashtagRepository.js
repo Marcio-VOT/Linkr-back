@@ -1,14 +1,16 @@
 import db from "../config/db.js";
 
 export const insertHashtagOnDb = async(hashtag, post_id) => {
-    const hashtag_id = await db.query(`INSERT INTO hashtag 
-    (hashtag) values ($1) RETURN id`, [hashtag])
+    const result = await db.query(`INSERT INTO hashtags
+    (hashtag) values ($1) RETURNING id`, [hashtag])
+    const hashtag_id = result.rows[0].id
     await db.query(`INSERT INTO post_hashtags 
     (hashtag_id, post_id) values ($1, $2)`, [hashtag_id, post_id])
 }
 
 export const getHashTags = async() => {
     const fetchHashtags =  await db.query(`SELECT hashtag from hashtags`)
+    console.log(fetchHashtags.rows)
     return fetchHashtags.rows
 }
 

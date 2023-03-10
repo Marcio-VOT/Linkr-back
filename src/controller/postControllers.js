@@ -2,14 +2,14 @@ import { getHashTags, insertHashtagOnDb } from "../repositories/hashtagRepositor
 import { alterPostRepository, deletePostRepository, getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
 
 export async function registerPost(req, res){
-    const {description, externalLink, hashtag} = req.body;
+    const {description, externalLink, hashtags} = req.body;
     const userId = res.locals.userId;
 
     try {
         const post_id = await registerPostRepository(userId, description, externalLink);
-        if(!hashtag) res.send("Post criado").status(201);
+        if(!hashtags) res.send("Post criado").status(201);
         else{
-            insertHashtagOnDb(hashtag, post_id)
+            hashtags.map(e => insertHashtagOnDb(e, post_id)) 
             res.send("Post criado").status(201)
         }
     } catch (error) {
@@ -21,8 +21,10 @@ export async function getPosts(req, res){
     try {
         const resultPost = await getPostsRepository();
         const resultHashtags = await getHashTags()
-        res.send({posts: result.rows, hashtags: resultHashtags.rows});
+        console.log(resultHashtags)
+        res.send({posts: resultPost.rows, hashtags: resultHashtags});
     } catch (error) {
+        console.log(error.message)
         res.status(500).send(error.message);
     }
 }
