@@ -15,17 +15,23 @@ export const getHashTags = async() => {
     return fetchHashtags.rows
 }
 
-export const getPostHashTags = async(hashtag) => {
-    const postHashtagsIds = await db.query(`SELECT post_id from hashtags 
-    WHERE hashtag = $1`, [hashtag])
-    const posts = postHashtagsIds.rows.map(async e =>  {
-      return await db.query(`
+export const getPostHashTags = async (hashtag) => {
+  const postHashtagsIds = await db.query(
+    `SELECT post_id from hashtags 
+    WHERE hashtag = $1`,
+    [hashtag]
+  );
+  
+  const posts = postHashtagsIds.rows.map(async (e) => {
+    return await db.query(
+      `
       SELECT p.description, p.external_link, p.publish_date, u.name, u.profile_picture 
       FROM posts p 
       JOIN users u 
       ON p.user_id = u.id
-      WHERE p."id" = $1`, [e.post_id]);
-})
-  return posts.rows
-}
-
+      WHERE p."id" = $1`,
+      [e.post_id]
+    );
+  });
+  return posts.rows;
+};
