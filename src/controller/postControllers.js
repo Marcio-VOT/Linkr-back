@@ -44,8 +44,12 @@ export async function alterPost(req, res) {
   const { description } = req.body;
 
   try {
-    await alterPostRepository(postId, userId, description);
-    res.send("Post alterado com sucesso").status(200);
+    const result = await alterPostRepository(postId, userId, description);
+    if (result === true) {
+      res.send("the post description was updated!").status(200);
+    } else if (result === false) {
+      res.send("only the creator of the post can update it");
+    }
   } catch (error) {
     res.send(error.message);
   }
