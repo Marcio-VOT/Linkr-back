@@ -43,6 +43,20 @@ export async function alterPost(req, res) {
   const userId = res.locals.userId;
   const { description } = req.body;
 
+<<<<<<< HEAD
+    try {
+        const result = await alterPostRepository(postId, userId, description);
+        if(result === true){
+            res.send("the post description was updated!").status(200);   
+        } else if (result === false){
+            res.send("only the creator of the post can update it");
+        }
+             
+    } catch (error) {
+        res.send(error.message);
+    }
+}
+=======
   try {
     await alterPostRepository(postId, userId, description);
     res.send("Post alterado com sucesso").status(200);
@@ -50,3 +64,4 @@ export async function alterPost(req, res) {
     res.send(error.message);
   }
 }
+>>>>>>> cb14744b745e53638d1f0f7461e68fdef8c7b7c5
