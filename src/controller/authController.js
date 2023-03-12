@@ -10,7 +10,6 @@ export const authController = {
     async signup(req, res) {
         const { name, email, password, profileUrl} = req.body
         try {
-
             const emailAlreadyExists = await userRepository.getUserByEmail(email)
             console.log(emailAlreadyExists)
             if (emailAlreadyExists) {
@@ -22,15 +21,13 @@ export const authController = {
             return res.sendStatus(201)
 
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
             return res.sendStatus(500)
         }
     },
     async signin(req, res){
         const {email, password} = req.body
-
         const user = await userRepository.getUserByEmail(email)
-
         if(!user){
             return res.sendStatus(404)
         }
