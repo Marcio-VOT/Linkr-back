@@ -42,7 +42,7 @@ export const getTagByPostId = async (postId) => {
   return result.rows.map((e) => e.hashtag) || [];
 };
 
-export const getTradding = async () => {
+export const getTrendding = async () => {
   const query = "select hashtags.hashtag, count(post_hashtags.hashtag_id) as qty from post_hashtags JOIN hashtags on post_hashtags.hashtag_id = hashtags.id group by hashtags.hashtag order by qty desc limit 10;"
   const trandding = await db.query(query)
   return trandding.rows
