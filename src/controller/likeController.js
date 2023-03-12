@@ -44,9 +44,9 @@ export async function getTwoUsers(req, res) {
     const {userId} = req.body
 
     try {
-        const users =  twoUsers(userId)
+        const users =  await twoUsers(userId)
         
-        res.status(200).send('ok')
+        res.status(200).send(users)
     } catch (error) {
         console.log(error)
         res.status(500).send(error);

@@ -2,7 +2,7 @@ import db from "../config/db.js";
 
 export async function countLikes(idUser,idPost){
     try {
-        const {rows:countLike } = await db.query(`SELECT count(*) FROM likes WHERE user_id=$1 AND post_id=$2 AND status=true`, [idUser,idPost])
+        const {rows:countLike } = await db.query(`SELECT count(*) FROM likes WHERE post_id=$1 AND status=true`, [idPost])
 
         return countLike[0].count
     } catch (error) {
@@ -31,7 +31,7 @@ export async function unlike(idUser,idPost){
 export async function twoUsers(idUser){
     try {
         const result = await db.query(`SELECT name FROM users JOIN likes ON users.id = likes.user_id LIMIT 2`)
-        console.log(result.rows)
+        return result.rows
     } catch (error) {
         console.log(error) 
     }
