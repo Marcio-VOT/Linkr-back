@@ -48,7 +48,7 @@ export const getTrendding = async () => {
   return trandding.rows
 }
 
-export const getPostsWithTagId = async (hashtagId) => {
+export const getPostsWithHashtagId = async (hashtagId) => {
   const query = `select posts.description, posts.external_link, posts.publish_date, users.name, users.profile_picture
   from post_hashtags
   join hashtags on post_hashtags.hashtag_id = hashtags.id
@@ -56,7 +56,7 @@ export const getPostsWithTagId = async (hashtagId) => {
   join users on users.id = posts.user_id
   where post_hashtags.hashtag_id = ${hashtagId}
   group by post_hashtags.post_id, posts.description, posts.external_link, posts.publish_date, users.name, users.profile_picture;`
-  
+
   const posts = await db.query(query, [hashtagId])
   return posts.rows
 }
