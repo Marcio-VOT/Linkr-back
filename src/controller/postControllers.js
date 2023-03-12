@@ -5,33 +5,37 @@ export async function registerPost(req, res) {
   let { description, externalLink, hashtags } = req.body;
   const userId = res.locals.userId;
   const tagRows = [];
- 
+
   try {
     const postId = await registerPostRepository(userId, description, externalLink);
-    console.log(hashtags)
     if (hashtags.length === 0) {
       return res.sendStatus(201);
     }
-    
+
     hashtags.forEach(async (e, i) => {
       const resultHashtag = await getTagByName(e)
       if (resultHashtag[0]) {
-      if(tagRows[0]){
-        console.log(tagRows.includes(e))
-        if(tagRows.includes(e)){
-          if(hashtags.length - 1 === i){
-            return res.sendStatus(200)
+        if (tagRows[0]) {
+          console.log(tagRows.includes(e))
+          if (tagRows.includes(e)) {
+            if (hashtags.length - 1 === i) {
+              console.log(tagRows)
+              console.log("------")
+              return res.sendStatus(201)
+            }
+            return;
           }
-          return;
-        } 
-      }
-        await insertPostHashtag(resultHashtag[0].id, postId)
+        }
         tagRows.push(e)
+        await insertPostHashtag(resultHashtag[0].id, postId)
+        if (hashtags.length - 1 === i) {
+          return res.sendStatus(201)
+        }
         return
       }
       const resultInsertHashtag = await insertHashtagOnDb(e)
-      await insertPostHashtag(resultInsertHashtag.rows[0].id, postId)
       tagRows.push(e)
+      await insertPostHashtag(resultInsertHashtag.rows[0].id, postId)
       res.sendStatus(201)
     })
   } catch (error) {
