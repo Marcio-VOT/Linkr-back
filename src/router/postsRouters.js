@@ -6,7 +6,7 @@ import validateToken from '../middlewares/validateToken.js'
 const router = Router();
 
 router.get("/posts",validateToken, getPosts);
-router.post("/posts",validatePost, validateToken, registerPost);
+router.post("/posts", validateToken, validatePost, registerPost);
 router.put("/posts/:id",validateToken, alterPost);
 router.delete("/posts/:id",validateToken, deletePost);
 

@@ -60,8 +60,12 @@ export async function deletePost(req, res) {
   const userId = res.locals.userId;
 
   try {
-    await deletePostRepository(postId, userId);
-    res.send("post deletado com sucesso");
+    const result = await deletePostRepository(postId, userId);
+    if (result === true) {
+      res.send("the post was deleted with sucess!");
+    } else if (result === false) {
+      res.status(401).send("only the creator of the post can delete the post");
+    }
   } catch (error) {
     res.send(error.message);
   }
@@ -77,7 +81,7 @@ export async function alterPost(req, res) {
     if (result === true) {
       res.send("the post description was updated!");
     } else if (result === false) {
-      res.status(401).send("only the creator of the post can update it");
+      res.status(401).send("only the creator of the post can update the post description");
     }
   } catch (error) {
     res.status(500).send(error.message);

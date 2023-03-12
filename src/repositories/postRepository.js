@@ -52,6 +52,10 @@ export async function deletePostRepository(postId, userId) {
   const validUser = postUserId.rows[0].user_id === userId;
 
   if (validUser) {
+    await db.query(`DELETE FROM post_hashtags WHERE post_id = $1`, [postId])
     await db.query(`DELETE FROM posts WHERE id = $1`, [postId]);
+    return validUser;
+  } else {
+    return validUser
   }
 }
