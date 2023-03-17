@@ -2,15 +2,14 @@ import { getHashTags, insertHashtagOnDb, insertPostHashtag, getTagByName } from 
 import { alterPostRepository, deletePostRepository, getPostsRepository, registerPostRepository } from "../repositories/postRepository.js";
 
 export async function registerPost(req, res) {
-  let { description, externalLink, hashtags } = req.body;
+let { description, externalLink, hashtags } = req.body;
 const userId = res.locals.userId;
 const tagRows = [];
 
 try {
   const postId = await registerPostRepository(userId, description, externalLink);
 
-  for (let i = 0; i < hashtags.length; i++) {
-    const e = hashtags[i];
+  const tagPromises = hashtags.map(async (e) => {
     const resultHashtag = await getTagByName(e);
     if (resultHashtag[0]) {
       if (!tagRows.includes(e)) {
@@ -22,7 +21,9 @@ try {
       tagRows.push(e);
       await insertPostHashtag(resultInsertHashtag.rows[0].id, postId);
     }
-  }
+  });
+
+  await Promise.all(tagPromises);
 
   res.sendStatus(201);
 } catch (error) {
