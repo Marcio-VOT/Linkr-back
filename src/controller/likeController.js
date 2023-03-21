@@ -1,4 +1,4 @@
-import { countLikes, newLike, twoUsers, unlike } from "../repositories/like.repository.js";
+import { countLikes, newLike, twoUsers, unlike, youLike } from "../repositories/like.repository.js";
 
 export async function getLikes(req, res) {
     const { userId, postId } = req.body
@@ -41,12 +41,24 @@ export async function removeLike(req, res) {
 }
 
 export async function getTwoUsers(req, res) {
-    const {userId} = req.body
+    const {postId} = req.body
 
     try {
-        const users =  await twoUsers(userId)
+        const users =  await twoUsers(postId)
         
         res.status(200).send(users)
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error);
+    }
+}
+export async function getYouLike(req,res){
+    const { userId, postId } = req.body
+
+    try {
+        const status = await youLike(userId, postId)
+        console.log(status)
+        res.status(200).send(status)
     } catch (error) {
         console.log(error)
         res.status(500).send(error);
