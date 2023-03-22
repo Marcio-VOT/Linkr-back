@@ -5,7 +5,7 @@ export async function PostHashTags(req, res){
       const {hashtag} = req.params 
       const [tagId] = await getTagByName(`#${hashtag}`)
       const posts = await getPostsWithHashtagId(tagId.id)
-      return res.send({hashtags: posts});
+      return res.send(posts);
   } catch (error) {
       res.status(500).send(error.message);
   }
