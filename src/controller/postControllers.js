@@ -35,8 +35,7 @@ try {
 export async function getPosts(req, res) {
   try {
     const resultPost = await getPostsRepository();
-    const resultHashtags = await getHashTags();
-    res.send({ posts: resultPost.rows, hashtags: resultHashtags });
+    res.send({ posts: resultPost.rows});
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error.message);
