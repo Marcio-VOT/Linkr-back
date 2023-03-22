@@ -38,7 +38,7 @@ export const authController = {
         }
 
         const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: "3h" })
-        return res.send({token, avatar: user.profile_picture})
+        return res.send({token, avatar: user.profile_picture, userId: user.id})
     },
     validToken(req, res){
         const { token } = req.params

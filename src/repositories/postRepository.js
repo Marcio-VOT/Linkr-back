@@ -3,12 +3,12 @@ import dayjs from "dayjs";
 
 export async function getPostsRepository() {
   const resultPost = await db.query(`
-        SELECT p.id, p.description, p.external_link, p.publish_date , p.user_id, u.name, u.profile_picture
+        SELECT p.id, p.description, p.external_link, p.publish_date , p.user_id, u.name, u.profile_picture, u.id as user_id
         FROM posts p 
         JOIN users u 
         ON p.user_id = u.id
         ORDER BY p.publish_date DESC
-        LIMIT 20
+        LIMIT 20;
         `);
   return resultPost;
 }
