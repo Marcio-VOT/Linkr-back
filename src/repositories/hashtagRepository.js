@@ -43,25 +43,30 @@ export const getTagByPostId = async (postId) => {
 };
 
 export const getTrendding = async () => {
-  const query = "select hashtags.hashtags, count(post_hashtags.hashtag_id) as qty from post_hashtags JOIN hashtags on post_hashtags.hashtag_id = hashtags.id group by hashtags.hashtags order by qty desc limit 10;"
-  const trandding = await db.query(query)
-  return trandding.rows
-}
+  const query =
+    "select hashtags.hashtags, count(post_hashtags.hashtag_id) as qty from post_hashtags JOIN hashtags on post_hashtags.hashtag_id = hashtags.id group by hashtags.hashtags order by qty desc limit 10;";
+  const trandding = await db.query(query);
+  return trandding.rows;
+};
 
-export const getPostsWithHashtagId = async (hashtagId) => {
+export const getPostsWithHashtagId = async ({ hashtagId, date, offset }) => {
   const query = `select posts.id, posts.description, posts.external_link, posts.publish_date, users.name, users.profile_picture, users.id as user_id
   from post_hashtags
   join hashtags on post_hashtags.hashtag_id = hashtags.id
   join posts on post_hashtags.post_id = posts.id
   join users on users.id = posts.user_id
   where post_hashtags.hashtag_id = $1
-  group by post_hashtags.post_id, posts.description, posts.external_link, posts.publish_date, users.name, users.profile_picture, users.id, posts.id;`
+  and posts.publish_date < $2
+  group by post_hashtags.post_id, posts.description, posts.external_link, posts.publish_date, users.name, users.profile_picture, users.id, posts.id
+  ORDER BY posts.publish_date DESC
+  LIMIT 10
+  OFFSET $3
+  ;`;
   try {
-    const posts = await db.query(query, [hashtagId])
-    return posts.rows
+    const posts = await db.query(query, [hashtagId, date, offset]);
+    return posts.rows;
   } catch (error) {
-    console.log(error)
-    return error
+    console.log(error);
+    return error;
   }
-}
-  
+};
