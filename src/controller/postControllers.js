@@ -47,9 +47,8 @@ export async function registerPost(req, res) {
 }
 
 export async function getPosts(req, res) {
-  const { date, offset } = req.body;
   try {
-    const resultPost = await getPostsRepository(date, offset);
+    const resultPost = await getPostsRepository(req.body);
     res.send({ posts: resultPost.rows });
   } catch (error) {
     console.log(error.message);

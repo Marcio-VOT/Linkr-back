@@ -1,7 +1,7 @@
 import db from "../config/db.js";
 import dayjs from "dayjs";
 
-export async function getPostsRepository(date, offset) {
+export async function getPostsRepository({ date, offset }) {
   const resultPost = await db.query(
     `
     SELECT p.id, p.description, p.external_link, p.publish_date, p.user_id, u.name, u.profile_picture, u.id AS user_id
