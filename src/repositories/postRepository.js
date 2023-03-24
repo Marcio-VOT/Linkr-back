@@ -1,15 +1,19 @@
 import db from "../config/db.js";
 import dayjs from "dayjs";
 
-export async function getPostsRepository() {
-  const resultPost = await db.query(`
-        SELECT p.id, p.description, p.external_link, p.publish_date , p.user_id, u.name, u.profile_picture, u.id as user_id
-        FROM posts p 
-        JOIN users u 
-        ON p.user_id = u.id
-        ORDER BY p.publish_date DESC
-        LIMIT 20;
-        `);
+export async function getPostsRepository(date, offset) {
+  const resultPost = await db.query(
+    `
+    SELECT p.id, p.description, p.external_link, p.publish_date, p.user_id, u.name, u.profile_picture, u.id AS user_id
+    FROM posts p 
+    JOIN users u ON p.user_id = u.id
+    WHERE p.publish_date < $1
+    ORDER BY p.publish_date DESC
+    LIMIT 10
+    OFFSET $2;
+    `,
+    [date, offset]
+  );
   return resultPost;
 }
 
@@ -52,10 +56,10 @@ export async function deletePostRepository(postId, userId) {
   const validUser = postUserId.rows[0].user_id === userId;
 
   if (validUser) {
-    await db.query(`DELETE FROM post_hashtags WHERE post_id = $1`, [postId])
+    await db.query(`DELETE FROM post_hashtags WHERE post_id = $1`, [postId]);
     await db.query(`DELETE FROM posts WHERE id = $1`, [postId]);
     return validUser;
   } else {
-    return validUser
+    return validUser;
   }
 }
