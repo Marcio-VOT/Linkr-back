@@ -13,6 +13,7 @@ const searchRouter = Router();
 searchRouter.get("/search/:user", validateToken, search);
 searchRouter.get(
   "/posts/:id",
+  validateToken,
   validateQuerySchema(offsetDateSchema),
   searchUserPosts
 );

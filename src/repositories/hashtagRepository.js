@@ -59,11 +59,15 @@ export const getPostsWithHashtagId = async ({ hashtagId, date, offset }) => {
   and posts.publish_date < $2
   group by post_hashtags.post_id, posts.description, posts.external_link, posts.publish_date, users.name, users.profile_picture, users.id, posts.id
   ORDER BY posts.publish_date DESC
-  LIMIT 10
+  LIMIT 4
   OFFSET $3
   ;`;
   try {
-    const posts = await db.query(query, [hashtagId, date, offset]);
+    const posts = await db.query(query, [
+      hashtagId,
+      date.toISOString(),
+      offset,
+    ]);
     return posts.rows;
   } catch (error) {
     console.log(error);
