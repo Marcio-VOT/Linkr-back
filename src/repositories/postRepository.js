@@ -9,10 +9,10 @@ export async function getPostsRepository({ date, offset }) {
     JOIN users u ON p.user_id = u.id
     WHERE p.publish_date < $1
     ORDER BY p.publish_date DESC
-    LIMIT 10
+    LIMIT 4
     OFFSET $2;
     `,
-    [date, offset]
+    [date.toISOString(), offset]
   );
   return resultPost;
 }
