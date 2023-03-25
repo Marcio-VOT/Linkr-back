@@ -65,7 +65,7 @@ export async function getYouLike(req, res) {
   try {
     const result = await youLike(userId, postId);
 
-    if (result.rowCount) {
+    if (result.rows[0]) {
       return res.send({ status: result.rows[0].status });
     }
 
