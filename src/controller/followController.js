@@ -2,10 +2,20 @@ import { createFollower, deleteFollow, getFollow } from "../repositories/follow.
 
 export const followController = {
     async follow(req, res) {
-        const { userId } = req.boy;
+        const { userId } = req.body;
         const { userId: followerId } = res.locals;
 
         try {
+            if(followerId === userId){
+                return res.sendStatus(409)
+            }
+
+            const result = await getFollow({followerId, userId})
+
+            if(result.length > 0){
+                return res.sendStatus(409)
+            }
+
             await createFollower({ followerId, userId })
             return res.sendStatus(201)
         } catch (error) {
@@ -15,10 +25,16 @@ export const followController = {
     },
 
     async unfollow(req, res){
-        const { userId } = req.boy;
+        const { userId } = req.params;
         const { userId: followerId } = res.locals;
 
         try {
+            const result = await getFollow({followerId, userId})
+
+            if(result.length === 0){
+                return res.sendStatus(404)
+            }
+
             await deleteFollow({ followerId, userId })
             return res.sendStatus(200)
         } catch (error) {
@@ -28,7 +44,7 @@ export const followController = {
     },
 
     async verifyFollow(req, res){
-        const {userId} = req.body
+        const {userId} = req.params
         const {userId : followerId} = res.locals
 
         try {
