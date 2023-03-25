@@ -1,6 +1,6 @@
-export function validateSchema(schema) {
+export function validateQuerySchema(schema) {
   return (req, res, next) => {
-    const { value, error: err } = schema.validate(req.body, {
+    const { value, error: err } = schema.validate(req.query, {
       abortEarly: false,
     });
 
@@ -8,7 +8,7 @@ export function validateSchema(schema) {
       const errorMessages = err.details.map((err) => err.message);
       return res.status(422).send(errorMessages);
     }
-    req.body = { ...value };
+    req.query = { ...value };
     next();
   };
 }
