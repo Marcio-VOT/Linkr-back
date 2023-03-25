@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { getComments, registerComment } from '../controller/commentsController';
-import validateComment from '../middlewares/validateComment';
-import validateToken from '../middlewares/validateToken';
+import { getComments, registerComment } from '../controller/commentsController.js';
+import validateComment from '../middlewares/validateComment.js';
+import validateToken from '../middlewares/validateToken.js';
 
 const router = Router();
 
-router.get("/comments",validateToken, getComments);
+router.get("/comments/:id",validateToken, getComments);
 router.post("/comments", validateToken, validateComment, registerComment);
 
 export default router;
