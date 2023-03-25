@@ -4,9 +4,10 @@ import cors from "cors";
 import { authRouter } from "./router/auth.routes.js";
 import searchRouter from "./router/searchRoutes.js";
 import likeRouter from "./router/like.routes.js";
-import postsRouters from "./router/postsRouters.js";
+import postsRoutes from "./router/postsRoutes.js";
 import hashTagsRoutes from "./router/HashTagsRoutes.js";
 import { metadataRouter } from "./router/metadata.routes.js";
+import commensRoutes from "./router/commentsRoutes.js"
 
 
 dotenv.config();
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use(cors());
 
 
-app.use([authRouter, searchRouter, postsRouters,likeRouter, hashTagsRoutes, metadataRouter]);
+app.use([authRouter, searchRouter, postsRoutes,likeRouter, hashTagsRoutes, metadataRouter, commensRoutes]);
 
 
 app.listen(
