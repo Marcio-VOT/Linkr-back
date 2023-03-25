@@ -10,7 +10,7 @@ import validateToken from "../middlewares/validateToken.js";
 
 const searchRouter = Router();
 
-searchRouter.get("/search/:user", search);
+searchRouter.get("/search/:user", validateToken, search);
 searchRouter.get(
   "/posts/:id",
   validateQuerySchema(offsetDateSchema),
