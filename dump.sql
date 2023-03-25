@@ -398,4 +398,3 @@ ALTER TABLE ONLY public.posts
 --
 -- PostgreSQL database dump complete
 --
-
