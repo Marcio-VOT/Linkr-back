@@ -5,10 +5,9 @@ dotenv.config();
 
 export default function validateToken(req, res, next) {
   let { authorization: token } = req.headers;
-  console.log(token);
 
   if (!token) {
-    return res.status(401).send({ message: "invalid token 1" });
+    return res.status(401).send({ message: "invalid token" });
   }
   token = token?.replace("Bearer ", "");
 
