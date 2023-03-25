@@ -7,7 +7,7 @@ export default function validateToken(req, res, next) {
   let { authorization: token } = req.headers;
 
   if (!token) {
-    res.status(401).send({ message: "invalid token" });
+    return res.status(401).send({ message: "invalid token" });
   }
   token = token?.replace("Bearer ", "");
 
