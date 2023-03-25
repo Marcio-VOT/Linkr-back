@@ -12,8 +12,9 @@ export const search = async (req, res) => {
 
 export const searchUserPosts = async (req, res) => {
   const { id } = req.params;
+  const { date, offset } = req.query;
   try {
-    const { rows } = await searchUser.selectUserPosts(id);
+    const { rows } = await searchUser.selectUserPosts({ id, date, offset });
     return res.send(rows).status(302);
   } catch (error) {
     return res.status(500).send(error.message);

@@ -7,16 +7,18 @@ export const selectUser = async (user) => {
   );
 };
 
-export const selectUserPosts = async (id) => {
+export const selectUserPosts = async ({ id, date, offset }) => {
   return await db.query(
     `
   SELECT * 
   FROM posts 
-  WHERE user_id = $1
+  WHERE user_id = $1 
+  AND posts.publish_date < $2
   ORDER BY posts.publish_date DESC
-  LIMIT 20
+  LIMIT 10
+  OFFSET $3
   ;`,
-    [id]
+    [id, date, offset]
   );
 };
 
