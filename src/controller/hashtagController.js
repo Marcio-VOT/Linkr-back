@@ -5,7 +5,7 @@ import {
 } from "../repositories/hashtagRepository.js";
 
 export async function PostHashTags(req, res) {
-  const { date, offset } = req.body;
+  const { date, offset } = req.query;
   try {
     const { hashtag } = req.params;
     const [tagId] = await getTagByName(`#${hashtag}`);

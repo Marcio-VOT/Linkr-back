@@ -48,7 +48,8 @@ export async function registerPost(req, res) {
 
 export async function getPosts(req, res) {
   try {
-    const resultPost = await getPostsRepository(req.body);
+    console.log(req.query);
+    const resultPost = await getPostsRepository(req.query);
     res.send({ posts: resultPost.rows });
   } catch (error) {
     console.log(error.message);

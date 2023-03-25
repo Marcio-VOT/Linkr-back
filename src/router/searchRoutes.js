@@ -4,7 +4,7 @@ import {
   searchUserData,
   searchUserPosts,
 } from "../controller/searchController.js";
-import { validateSchema } from "../middlewares/validateSchema.js";
+import { validateQuerySchema } from "../middlewares/validateQuerySchema.js";
 import { offsetDateSchema } from "../schemas/offsetConfigSchema.js";
 
 const searchRouter = Router();
@@ -12,7 +12,7 @@ const searchRouter = Router();
 searchRouter.get("/search/:user", search);
 searchRouter.get(
   "/posts/:id",
-  validateSchema(offsetDateSchema),
+  validateQuerySchema(offsetDateSchema),
   searchUserPosts
 );
 searchRouter.get("/data/:id", searchUserData);
