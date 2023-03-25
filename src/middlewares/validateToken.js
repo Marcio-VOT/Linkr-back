@@ -17,5 +17,7 @@ export default function validateToken(req, res, next) {
         }
         res.locals.userId = decoded.userId;
     });
+
     next();
 }
+
