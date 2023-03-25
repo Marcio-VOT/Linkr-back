@@ -3,9 +3,9 @@ import { getComments, registerComment } from '../controller/commentsController.j
 import validateComment from '../middlewares/validateComment.js';
 import validateToken from '../middlewares/validateToken.js';
 
-const router = Router();
+const commentsRouter = Router();
 
-router.get("/comments/:id",validateToken, getComments);
-router.post("/comments", validateToken, validateComment, registerComment);
+commentsRouter.get("/comments/:id",validateToken, getComments);
+commentsRouter.post("/comments", validateToken, validateComment, registerComment);
 
-export default router;
+export default commentsRouter;
