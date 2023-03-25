@@ -1,14 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { authRouter } from "./router/auth.routes.js";
-import searchRouter from "./router/searchRoutes.js";
-import likeRouter from "./router/like.routes.js";
-import postsRoutes from "./router/postsRoutes.js";
-import hashTagsRoutes from "./router/HashTagsRoutes.js";
-import { metadataRouter } from "./router/metadata.routes.js";
-import commensRoutes from "./router/commentsRoutes.js"
-
+import { routes } from "./router/routes.js";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -18,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 
-app.use([authRouter, searchRouter, postsRoutes,likeRouter, hashTagsRoutes, metadataRouter, commensRoutes]);
+app.use(routes);
 
 
 app.listen(

@@ -1,4 +1,4 @@
-import { createFollower, deleteFollow, getFollow } from "../repositories/follow.repository";
+import { createFollower, deleteFollow, getFollow } from "../repositories/follow.repository.js";
 
 export const followController = {
     async follow(req, res) {

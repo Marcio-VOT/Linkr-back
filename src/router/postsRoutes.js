@@ -10,16 +10,16 @@ import { validateQuerySchema } from "../middlewares/validateQuerySchema.js";
 import validateToken from "../middlewares/validateToken.js";
 import { offsetDateSchema } from "../schemas/offsetConfigSchema.js";
 
-const router = Router();
+const postsRouter = Router();
 
-router.get(
+postsRouter.get(
   "/posts",
   validateToken,
   validateQuerySchema(offsetDateSchema),
   getPosts
 );
-router.post("/posts", validateToken, validatePost, registerPost);
-router.put("/posts/:id", validateToken, alterPost);
-router.delete("/posts/:id", validateToken, deletePost);
+postsRouter.post("/posts", validateToken, validatePost, registerPost);
+postsRouter.put("/posts/:id", validateToken, alterPost);
+postsRouter.delete("/posts/:id", validateToken, deletePost);
 
-export default router;
+export default postsRouter;
