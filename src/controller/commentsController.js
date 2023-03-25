@@ -11,7 +11,9 @@ export async function getComments(req, res){
 }
 
 export async function registerComment(req, res){
-    const { userId, postId, comment} = req.body;
+    const userId = res.locals.userId;
+    const { postId, comment} = req.body;
+    
     try {
         await registerCommentRepository(userId, postId, comment);
         res.status(201).send("Comment registered successfully");
