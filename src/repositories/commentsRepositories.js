@@ -3,7 +3,7 @@ import db from "../config/db.js";
 export async function getCommentsRepository(postId){
     try {
         const postComments = await db.query(`
-        SELECT c.comment, u.name, u.profile_picture
+        SELECT c.comment, u.id, u.name, u.profile_picture
         FROM comments c 
         JOIN users u 
         ON c.user_id = u.id
