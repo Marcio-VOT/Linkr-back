@@ -1,18 +1,85 @@
 import db from "../config/db.js";
 import dayjs from "dayjs";
-
-export async function getPostsRepository({ date, offset }) {
+/*p.publish_date < $1 */
+export async function getPostsRepository(userId, { date, offset }) {
   const resultPost = await db.query(
     `
-    SELECT p.id, p.description, p.external_link, p.publish_date, p.user_id, u.name, u.profile_picture, u.id AS user_id
-    FROM posts p 
-    JOIN users u ON p.user_id = u.id
-    WHERE p.publish_date < $1
-    ORDER BY p.publish_date DESC
-    LIMIT 4
-    OFFSET $2;
+      SELECT 
+    posts.id, 
+    posts.description, 
+    posts.external_link, 
+    repost.publish_date as publish_date,
+    posts.user_id, 
+    users.profile_picture, 
+    users.name, 
+    true as is_repost, 
+    repost.publish_date as published_date, 
+    repost.user_id as published_by
+FROM 
+    repost
+    JOIN posts ON repost.post_id = posts.id
+    JOIN users ON repost.user_id = users.id
+    JOIN follow ON follow.user_id = posts.user_id
+WHERE 
+    follow.follower_id = $1 and repost.publish_date < $3 
+UNION ALL
+SELECT 
+    posts.id, 
+    posts.description, 
+    posts.external_link, 
+    posts.publish_date, 
+    posts.user_id, 
+    users.profile_picture, 
+    users.name,  
+    false as is_repost, 
+    NULL as published_date, 
+    NULL as published_by
+FROM 
+    posts
+    JOIN users ON posts.user_id = users.id
+WHERE 
+    posts.user_id = $1 and posts.publish_date < $3 
+    AND NOT EXISTS (
+        SELECT 
+            NULL
+        FROM 
+            repost
+        WHERE 
+            repost.post_id = posts.id
+    )
+UNION ALL
+SELECT 
+    posts.id, 
+    posts.description, 
+    posts.external_link, 
+    posts.publish_date, 
+    posts.user_id, 
+    users.profile_picture, 
+    users.name,  
+    false as is_repost, 
+    NULL as published_date, 
+    NULL as published_by
+FROM 
+    posts
+    JOIN users ON posts.user_id = users.id
+    JOIN follow ON follow.user_id = posts.user_id
+WHERE 
+    follow.follower_id = $1 and posts.publish_date < $3
+    AND NOT EXISTS (
+        SELECT 
+            NULL
+        FROM 
+            repost
+        WHERE 
+            repost.post_id = posts.id
+    )
+ORDER BY 
+    publish_date DESC
+LIMIT 4
+OFFSET $2;
+
     `,
-    [date.toISOString(), offset]
+    [userId, offset, date.toISOString()]
   );
   return resultPost;
 }
