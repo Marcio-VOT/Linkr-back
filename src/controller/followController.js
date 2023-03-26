@@ -1,4 +1,4 @@
-import { createFollower, deleteFollow, getFollow } from "../repositories/follow.repository.js";
+import { createFollower, deleteFollow, getFollow, getQuantityFollowing } from "../repositories/follow.repository.js";
 
 export const followController = {
     async follow(req, res) {
@@ -54,5 +54,18 @@ export const followController = {
             console.log(error)
             return res.sendStatus(500)
         }
+    },
+
+    async quantityFollowing(req, res){
+        const {userId: followerId} = res.locals
+        try {
+            const result = await getQuantityFollowing({followerId})
+            return res.send(result[0])
+        } catch (error) {
+            console.log(error)
+            res.status(500).send()   
+        }
+        
+
     }
 }
