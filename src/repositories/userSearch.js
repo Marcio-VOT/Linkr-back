@@ -1,10 +1,17 @@
 import db from "../config/db.js";
 
-export const selectUser = async (user) => {
+export const selectUser = async (userName, userId) => {
   return await db.query(
-    `SELECT id, name, profile_picture FROM users WHERE name LIKE $1;`,
-    [`${user}%`]
+    `SELECT users.id, users.name, users.profile_picture FROM users where name like $1 and id <> $2;`,
+    [`${userName}%`, userId]
   );
+};
+
+export const getUserFollow = async (userName, userId) => {
+  const query =
+    "SELECT users.id, users.name, users.profile_picture FROM users join follow on users.id = follow.user_id WHERE name LIKE $1 and follow.follower_id = $2;";
+  const result = await db.query(query, [`${userName}%`, userId]);
+  return result.rows;
 };
 
 export const selectUserPosts = async ({ id, date, offset }) => {
@@ -15,10 +22,10 @@ export const selectUserPosts = async ({ id, date, offset }) => {
   WHERE user_id = $1 
   AND posts.publish_date < $2
   ORDER BY posts.publish_date DESC
-  LIMIT 10
+  LIMIT 4
   OFFSET $3
   ;`,
-    [id, date, offset]
+    [id, date.toISOString(), offset]
   );
 };
 

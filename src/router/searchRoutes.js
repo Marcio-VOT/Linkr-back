@@ -6,12 +6,14 @@ import {
 } from "../controller/searchController.js";
 import { validateQuerySchema } from "../middlewares/validateQuerySchema.js";
 import { offsetDateSchema } from "../schemas/offsetConfigSchema.js";
+import validateToken from "../middlewares/validateToken.js";
 
 const searchRouter = Router();
 
-searchRouter.get("/search/:user", search);
+searchRouter.get("/search/:user", validateToken, search);
 searchRouter.get(
   "/posts/:id",
+  validateToken,
   validateQuerySchema(offsetDateSchema),
   searchUserPosts
 );
