@@ -8,6 +8,7 @@ export async function getCommentsRepository(postId){
         JOIN users u 
         ON c.user_id = u.id
         WHERE c.post_id = $1
+        ORDER BY c.id
         `, [postId]);
         return postComments;
         
@@ -22,4 +23,10 @@ export async function registerCommentRepository(userId, postId, comment){
     } catch (error) {
         return error.message
     }
+}
+
+export async function getQuantityComments({postId}){
+    const query = "select count(*) as quantitycomments from comments where post_id=$1"
+    const result = await db.query(query, [postId])
+    return result.rows;
 }

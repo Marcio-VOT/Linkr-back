@@ -1,4 +1,4 @@
-import { getCommentsRepository, registerCommentRepository } from "../repositories/commentsRepositories.js";
+import { getCommentsRepository, getQuantityComments, registerCommentRepository } from "../repositories/commentsRepositories.js";
 
 export async function getComments(req, res){
     const postId = req.params.id;
@@ -19,5 +19,16 @@ export async function registerComment(req, res){
         res.status(201).send("Comment registered successfully");
     } catch (error) {
         res.status(500).send(error.message);
+    }
+}
+
+export async function quantityComments(req, res){
+    const { postId } = req.params
+    try {
+        const result = await getQuantityComments({postId})
+        return res.send(result[0])
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500)
     }
 }
