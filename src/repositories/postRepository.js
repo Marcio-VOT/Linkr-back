@@ -6,8 +6,7 @@ export async function getPostsRepository(userId, { date, offset }) {
     `
     SELECT              
     COALESCE(r.id, p.id) AS id,
-    COALESCE(r.user_id, p.user_id) user_id,
-    p.description AS description,
+    COALESCE(r.user_id, p.user_id) user_id,    p.description AS description,
     p.external_link AS external_link,
     COALESCE(r.publish_date, p.publish_date) AS publish_date,
     r.user_id AS repost_user_id,
@@ -22,8 +21,10 @@ WHERE
     limit 10
     offset $2
     `
-    ,
-    [userId, offset, date.toISOString()]
+
+
+
+    ,[userId, offset, date.toISOString()]
   );
   return resultPost;
 }
