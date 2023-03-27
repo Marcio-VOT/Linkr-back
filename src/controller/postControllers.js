@@ -95,9 +95,10 @@ export async function alterPost(req, res) {
 
 export async function countNewPosts(req, res) {
   const { date } = req.query;
+  const { userId } = res.locals;
   try {
-    const result = await postsCount({ date });
-    res.status(200).send(result);
+    const { rowCount } = await postsCount({ date, userId });
+    return res.status(200).send(`${rowCount}`);
   } catch (error) {
     res.status(500).send(error.message);
   }

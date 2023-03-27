@@ -131,10 +131,81 @@ export async function deletePostRepository(postId, userId) {
   }
 }
 
-export const postsCount = async ({ date }) => {
-  return (
-    await db.query(`SELECT COUNT(*) FROM POSTS WHERE publish_date > $1;`, [
-      date.toISOString(),
-    ])
-  ).rows[0].count;
+export const postsCount = async ({ date, userId }) => {
+  return await db.query(
+    `
+    SELECT 
+    posts.id, 
+    posts.description, 
+    posts.external_link, 
+    repost.publish_date as publish_date,
+    posts.user_id, 
+    users.profile_picture, 
+    users.name, 
+    true as is_repost, 
+    repost.publish_date as published_date, 
+    repost.user_id as published_by
+FROM 
+    repost
+    JOIN posts ON repost.post_id = posts.id
+    JOIN users ON repost.user_id = users.id
+    JOIN follow ON follow.user_id = posts.user_id
+WHERE 
+    follow.follower_id = $1 and repost.publish_date > $2 
+UNION ALL
+SELECT 
+    posts.id, 
+    posts.description, 
+    posts.external_link, 
+    posts.publish_date, 
+    posts.user_id, 
+    users.profile_picture, 
+    users.name,  
+    false as is_repost, 
+    NULL as published_date, 
+    NULL as published_by
+FROM 
+    posts
+    JOIN users ON posts.user_id = users.id
+WHERE 
+    posts.user_id = $1 and posts.publish_date > $2 
+    AND NOT EXISTS (
+        SELECT 
+            NULL
+        FROM 
+            repost
+        WHERE 
+            repost.post_id = posts.id
+    )
+UNION ALL
+SELECT 
+    posts.id, 
+    posts.description, 
+    posts.external_link, 
+    posts.publish_date, 
+    posts.user_id, 
+    users.profile_picture, 
+    users.name,  
+    false as is_repost, 
+    NULL as published_date, 
+    NULL as published_by
+FROM 
+    posts
+    JOIN users ON posts.user_id = users.id
+    JOIN follow ON follow.user_id = posts.user_id
+WHERE 
+    follow.follower_id = $1 and posts.publish_date > $2
+    AND NOT EXISTS (
+        SELECT 
+            NULL
+        FROM 
+            repost
+        WHERE 
+            repost.post_id = posts.id
+    )
+ORDER BY 
+    publish_date DESC
+  `,
+    [userId, date.toISOString()]
+  );
 };
