@@ -3,8 +3,7 @@ import dayjs from "dayjs";
 /*p.publish_date < $1 */
 export async function getPostsRepository(userId, { date, offset }) {
   const resultPost = await db.query(
-    `
-      SELECT 
+    `SELECT 
     posts.id, 
     posts.description, 
     posts.external_link, 
@@ -83,6 +82,30 @@ OFFSET $2;
   );
   return resultPost;
 }
+
+export async function getTotalRepost(postId){
+  const count = await db.query(`select count(*) as quantityrepost from reposts where post_id = $1`, [postId])
+  return count
+}
+
+export async function getUser(postId){
+  const result = await db.query(`select users.name as name from users join reposts ON post_id = $1`, [postId])
+  return result
+}
+
+export async function registerRepost(
+  userId,
+  postId
+) {
+  const result = await db.query(
+    `
+    INSERT INTO reposts (user_id, post_id)
+    VALUES ($1, $2)`,
+    [userId, postId]
+  );
+  return 
+}
+
 
 export async function registerPostRepository(
   userId,
