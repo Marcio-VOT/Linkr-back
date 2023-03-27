@@ -8,6 +8,7 @@ import {
   alterPostRepository,
   deletePostRepository,
   getPostsRepository,
+  postsCount,
   registerPostRepository,
 } from "../repositories/postRepository.js";
 
@@ -47,7 +48,7 @@ export async function registerPost(req, res) {
 }
 
 export async function getPosts(req, res) {
-  const {userId} = res.locals
+  const { userId } = res.locals;
   try {
     const resultPost = await getPostsRepository(userId, req.query);
     res.send({ posts: resultPost.rows });
@@ -87,6 +88,15 @@ export async function alterPost(req, res) {
         .status(401)
         .send("only the creator of the post can update the post description");
     }
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+export async function countNewPosts(req, res) {
+  const { date } = req.query;
+  try {
+    res.status(200).send(await postsCount({ date }));
   } catch (error) {
     res.status(500).send(error.message);
   }
