@@ -75,7 +75,7 @@ WHERE
     )
 ORDER BY 
     publish_date DESC
-LIMIT 4
+LIMIT 10
 OFFSET $2;
 
     `,
