@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   alterPost,
+  countNewPosts,
   deletePost,
   getCountRepost,
   getPosts,
@@ -35,5 +36,11 @@ postsRouter.post(
 postsRouter.post("/posts", validateToken, validatePost, registerPost);
 postsRouter.put("/posts/:id", validateToken, alterPost);
 postsRouter.delete("/posts/:id", validateToken, deletePost);
+postsRouter.get(
+  "/posts/count",
+  validateToken,
+  validateQuerySchema(offsetDateSchema),
+  countNewPosts
+);
 
 export default postsRouter;
