@@ -6,6 +6,7 @@ import {
   getCountRepost,
   getPosts,
   registerPost,
+  postRepost
 } from "../controller/postControllers.js";
 import validatePost from "../middlewares/validatePost.js";
 import { validateQuerySchema } from "../middlewares/validateQuerySchema.js";
@@ -22,7 +23,7 @@ postsRouter.get(
 );
 
 postsRouter.get(
-  "/re-posts/:id",
+  "/re-posts/:postId",
   validateToken,
   getCountRepost
 );
@@ -30,7 +31,7 @@ postsRouter.get(
 postsRouter.post(
   "/re-posts/:id",
   validateToken,
-
+  postRepost
 );
 
 postsRouter.post("/posts", validateToken, validatePost, registerPost);

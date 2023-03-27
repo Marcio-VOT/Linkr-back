@@ -3,93 +3,38 @@ import dayjs from "dayjs";
 /*p.publish_date < $1 */
 export async function getPostsRepository(userId, { date, offset }) {
   const resultPost = await db.query(
-    `SELECT 
-    posts.id, 
-    posts.description, 
-    posts.external_link, 
-    repost.publish_date as publish_date,
-    posts.user_id, 
-    users.profile_picture, 
-    users.name, 
-    true as is_repost, 
-    repost.publish_date as published_date, 
-    repost.user_id as published_by
-FROM 
-    repost
-    JOIN posts ON repost.post_id = posts.id
-    JOIN users ON repost.user_id = users.id
-    JOIN follow ON follow.user_id = posts.user_id
-WHERE 
-    follow.follower_id = $1 and repost.publish_date < $3 
-UNION ALL
-SELECT 
-    posts.id, 
-    posts.description, 
-    posts.external_link, 
-    posts.publish_date, 
-    posts.user_id, 
-    users.profile_picture, 
-    users.name,  
-    false as is_repost, 
-    NULL as published_date, 
-    NULL as published_by
-FROM 
-    posts
-    JOIN users ON posts.user_id = users.id
-WHERE 
-    posts.user_id = $1 and posts.publish_date < $3 
-    AND NOT EXISTS (
-        SELECT 
-            NULL
-        FROM 
-            repost
-        WHERE 
-            repost.post_id = posts.id
-    )
-UNION ALL
-SELECT 
-    posts.id, 
-    posts.description, 
-    posts.external_link, 
-    posts.publish_date, 
-    posts.user_id, 
-    users.profile_picture, 
-    users.name,  
-    false as is_repost, 
-    NULL as published_date, 
-    NULL as published_by
-FROM 
-    posts
-    JOIN users ON posts.user_id = users.id
-    JOIN follow ON follow.user_id = posts.user_id
-WHERE 
-    follow.follower_id = $1 and posts.publish_date < $3
-    AND NOT EXISTS (
-        SELECT 
-            NULL
-        FROM 
-            repost
-        WHERE 
-            repost.post_id = posts.id
-    )
-ORDER BY 
-    publish_date DESC
-LIMIT 4
-OFFSET $2;
-
-    `,
+    `
+    SELECT              
+    COALESCE(r.id, p.id) AS id,
+    COALESCE(r.user_id, p.user_id) user_id,
+    p.description AS description,
+    p.external_link AS external_link,
+    COALESCE(r.publish_date, p.publish_date) AS publish_date,
+    r.user_id AS repost_user_id,
+    r.publish_date AS repost_publish_date, u.name, u.profile_picture
+FROM
+    follow f
+    JOIN posts p ON p.user_id = f.user_id
+    LEFT JOIN repost r ON r.post_id = p.id AND r.user_id = f.follower_id join users u on p.user_id = u.id  
+WHERE
+    f.follower_id = $1 and p.publish_date < $3
+    order by p.publish_date , r.publish_date desc
+    limit 10
+    offset $2
+    `
+    ,
     [userId, offset, date.toISOString()]
   );
   return resultPost;
 }
 
 export async function getTotalRepost(postId){
-  const count = await db.query(`select count(*) as quantityrepost from reposts where post_id = $1`, [postId])
+  const count = await db.query(`select count(*) as quantityrepost from repost where post_id = $1`, [postId])
   return count
 }
 
 export async function getUser(postId){
-  const result = await db.query(`select users.name as name from users join reposts ON post_id = $1`, [postId])
+  const result = await db.query(`select users.name as name from users where id = $1`, [postId])
   return result
 }
 
@@ -99,7 +44,7 @@ export async function registerRepost(
 ) {
   const result = await db.query(
     `
-    INSERT INTO reposts (user_id, post_id)
+    INSERT INTO repost (user_id, post_id)
     VALUES ($1, $2)`,
     [userId, postId]
   );
@@ -157,78 +102,22 @@ export async function deletePostRepository(postId, userId) {
 export const postsCount = async ({ date, userId }) => {
   return await db.query(
     `
-    SELECT 
-    posts.id, 
-    posts.description, 
-    posts.external_link, 
-    repost.publish_date as publish_date,
-    posts.user_id, 
-    users.profile_picture, 
-    users.name, 
-    true as is_repost, 
-    repost.publish_date as published_date, 
-    repost.user_id as published_by
-FROM 
-    repost
-    JOIN posts ON repost.post_id = posts.id
-    JOIN users ON repost.user_id = users.id
-    JOIN follow ON follow.user_id = posts.user_id
-WHERE 
-    follow.follower_id = $1 and repost.publish_date > $2 
-UNION ALL
-SELECT 
-    posts.id, 
-    posts.description, 
-    posts.external_link, 
-    posts.publish_date, 
-    posts.user_id, 
-    users.profile_picture, 
-    users.name,  
-    false as is_repost, 
-    NULL as published_date, 
-    NULL as published_by
-FROM 
-    posts
-    JOIN users ON posts.user_id = users.id
-WHERE 
-    posts.user_id = $1 and posts.publish_date > $2 
-    AND NOT EXISTS (
-        SELECT 
-            NULL
-        FROM 
-            repost
-        WHERE 
-            repost.post_id = posts.id
-    )
-UNION ALL
-SELECT 
-    posts.id, 
-    posts.description, 
-    posts.external_link, 
-    posts.publish_date, 
-    posts.user_id, 
-    users.profile_picture, 
-    users.name,  
-    false as is_repost, 
-    NULL as published_date, 
-    NULL as published_by
-FROM 
-    posts
-    JOIN users ON posts.user_id = users.id
-    JOIN follow ON follow.user_id = posts.user_id
-WHERE 
-    follow.follower_id = $1 and posts.publish_date > $2
-    AND NOT EXISTS (
-        SELECT 
-            NULL
-        FROM 
-            repost
-        WHERE 
-            repost.post_id = posts.id
-    )
-ORDER BY 
-    publish_date DESC
-  `,
-    [userId, date.toISOString()]
+    SELECT              
+    COALESCE(r.id, p.id) AS id,
+    COALESCE(r.user_id, p.user_id) user_id,
+    p.description AS description,
+    p.external_link AS external_link,
+    COALESCE(r.publish_date, p.publish_date) AS publish_date,
+    r.user_id AS repost_user_id,
+    r.publish_date AS repost_publish_date, u.name, u.profile_picture
+FROM
+    follow f
+    JOIN posts p ON p.user_id = f.user_id
+    LEFT JOIN repost r ON r.post_id = p.id AND r.user_id = f.follower_id join users u on p.user_id = u.id  
+WHERE
+    f.follower_id = $1 and p.publish_date > $2
+    order by p.publish_date , r.publish_date desc
+    `
+    ,[userId, date.toISOString()]
   );
 };
