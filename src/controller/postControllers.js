@@ -1,5 +1,4 @@
 import {
-  getHashTags,
   insertHashtagOnDb,
   insertPostHashtag,
   getTagByName,
@@ -11,6 +10,8 @@ import {
   postsCount,
   registerPostRepository,
   registerRepost,
+  getTotalRepost,
+  getUser
 } from "../repositories/postRepository.js";
 
 export async function registerPost(req, res) {
@@ -66,7 +67,9 @@ export async function getPosts(req, res) {
   const { userId } = res.locals;
   try {
     const resultPost = await getPostsRepository(userId, req.query);
+    console.log(resultPost.rows)
     res.send({ posts: resultPost.rows });
+    
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error.message);
@@ -74,7 +77,7 @@ export async function getPosts(req, res) {
 }
 
 export async function postRepost(req, res){
-  const {postId} = req.params
+  const {id : postId} = req.params
   const {userId} = res.locals
   try {
     await registerRepost(userId, postId);    
