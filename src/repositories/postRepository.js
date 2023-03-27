@@ -134,7 +134,7 @@ export async function deletePostRepository(postId, userId) {
 export const postsCount = async ({ date }) => {
   return (
     await db.query(`SELECT COUNT(*) FROM POSTS WHERE publish_date > $1;`, [
-      date,
+      date.toISOString(),
     ])
   ).rows[0].count;
 };
